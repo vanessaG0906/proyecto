@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>filtro imagenes</title>
+<script>
+window.onload = function(){
+ var apiFile=(window.File && window.FileReader);
+ if(apiFile==false){
+	 alert("Lo sentimos, tu navegador no soporta el API file de HTML5");
+	 return;
+	 }
+	 document.getElementById("archivos").addEventListener("change", seleccionarArchivo);
+}
+function seleccionarArchivo(e){
+var archivos = e.target.files;
+var buenos = new Array();
+var malos = new Array();
+var total = 0;
+//Ciclo
+for(i=0; i<archivos.length; i++){
+	if(archivos[i].type=="image/jpeg"){
+	var info = "<p>Nombre: " +archivos[i].name+", tamaño: "+archivos[i].size+", tipo: "+archivos[i].type+" </p>";
+	total +=archivos[i].size;
+	document.getElementById("salida").innerHTML += info;
+	buenos.push(archivos[i]);
+	}else {
+		malos.push(archivos[i]);
+	}
+}
+document.getElementById("salida").innerHTML += "<p>JPG leídos: "+total/1024+" en "+buenos.length+" archivos" ;
+document.getElementById("salida").innerHTML += "<p>otros archivos leídos: "+malos.length;;
+
+
+	}
+</script>
+</head>
+
+<body>
+<h1>Seleccione solo archivos JPG </h1>
+
+<form action=""> 
+<input type="file" name="archivos" id="archivos" multiple/>
+
+</form>
+<div id="salida"></div>
+</body>
+</html>

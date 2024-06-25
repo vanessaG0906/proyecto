@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Uso de la etiqueta input</title>
+<script>
+var archivo = null;
+var lectura = null; 
+var inicio = true;
+window.onload = function(){
+ var apiFile=(window.File && window.FileReader);
+ if(apiFile==false){
+	 alert("Lo sentimos, tu navegador no soporta el API file de HTML5");
+	 return;
+	 }
+	 document.getElementById("archivos").addEventListener("change", seleccionarArchivo);
+     document.getElementById("inicio").addEventListener("click", inicioCarga);
+     document.getElementById("cancela").addEventListener("click", cancelaCarga);
+}
+function cancelaCarga(e){
+    if (lectura) lectura.abort();
+}
+function seleccionarArchivo(e){
+	archivo = e.target.files[0];
+    document.getElementById("nombre").innerHTML = e.name;
+	}
+    function inicioCarga(e){
+        if(archivo!=null){
+            lectura = new FileReader();
+
+            lectura.onloadstart = iniciaCargaArchivo;
+            lectura.onloadend = terminaCargaArchivo;
+            lectura.onload = terminaCarga;
+            lectura.onerror = errorCargaArchivo;
+            lectura.onprogress = ProgresoCargaArchivo;
+            lectura.onabort = CancelaCargaArchivo;
+
+            lectura.readAsBinaryString(archivo);
+        
+
+        }
+    }
+
+    function iniciaCargaArchivo(e){
+        document.querySelector("#progreso").innerHTML += "<p>onloadstar: Inicio de Carga</p>"
+    }
+    function terminaCargaArchivo(e){
+        document.querySelector("#progreso").innerHTML += "<p>onloadend: Fin de Carga</p>"
+    }
+    function terminaCarga(e){
+        document.querySelector("#progreso").innerHTML += "<p>onload: Fin de Carga</p>"
+    }
+    function errorCargaArchivo(e){
+        document.querySelector("#progreso").innerHTML += "<p>onerror: Hay un error en la carga</p>"
+        switch(e.target.error.code){
+            case e.target.error.NOT_FOUND_ERR:
+                document.querySelector("#progreso").innerHTML += "<p>onerror: Archivo no encontrado</p>"
+                break;
+                case e.target.error.NOT_READABLE_ERR:
+                document.querySelector("#progreso").innerHTML += "<p>onerror: Archivo ilegible</p>"
+                break;
+
+        }
+    }
+    
+    function ProgresoCargaArchivo(e){
+        if(e.lengthComputable){
+            if (inicio){
+                inicio = false;
+                document.querySelector("#progreso").innerHTML = "<p id='porcien'></p>";
+            }
+            var porciento = Math.round((e.loaded/e.total)*100);
+            document.querySelector("#porcien").innerHTML = "<p>"+porciento+" % de carga </p>"
+
+        }
+    }
+    function CancelaCargaArchivo(e){
+        document.querySelector("#progreso").innerHTML += "<p>onabort: Proceso de carga cancelado</p>"
+    }
+</script>
+</head>
+
+<body>
+<h1>Seleccione un archivo </h1>
+
+<form action=""> 
+<input type="file" name="archivos" id="archivos"/>
+
+</form>
+<p>Nombre del archivo: <span id="nombre"></span></p>
+<p>Proceso de carga</p>
+<button id="inicio">Iniciar la carga</button>
+<button id="cancela">Cancelar la carga</button>
+<div id = "progreso"></div>
+</body>
+</html>

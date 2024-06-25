@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Sqlite</title>
+    <script>
+        window.onload = function() {
+            if (!window.openDatabase) {
+                alert('Este navegador NO soporta el API WebSQL');
+                return;
+            }
+
+            // Abrimos o creamos una base de datos llamada 'libros'
+            var db = openDatabase('libros', '1.0', 'Mis libros', 2 * 1024 * 1024);
+
+            // Crear la tabla 'libros' si no existe
+            var q = 'CREATE TABLE IF NOT EXISTS libros (id INTEGER, nombre TEXT, autor TEXT, anio INTEGER, editorial TEXT, precio REAL)';
+            db.transaction(function(tx) {
+                tx.executeSql(q);
+            }, errorHandler, exitoHandler);
+
+            var q = 'DROP TABLE libros123';
+            db.transaction(function(tx){
+                tx.executeSql(q)
+            },
+            errorHandler,
+            exitoHandler);
+
+        }
+
+        function errorHandler(transaction, error) {
+            console.log('Error:', + error) }
+
+        function exitoHandler() {
+            console.log('Consulta ejecutada con éxito');
+        }
+    </script>
+</head>
+<body>
+    <h1>Bienvenido a WebSQL</h1>
+</body>
+</html>

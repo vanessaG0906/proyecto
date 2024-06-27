@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Sqlite</title>
+    <script>
+        window.onload = function() {
+            if (!window.openDatabase) {
+                alert('Este navegador NO soporta el API WebSQL');
+                return;
+            }
+
+            // Abrimos o creamos una base de datos llamada 'libros'
+            var db = openDatabase('libros', '1.0', 'Mis libros', 2 * 1024 * 1024);
+
+            // Crear la tabla 'libros' si no existe
+            var q = 'CREATE TABLE libros (' +
+                    'id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, ' +
+                    'nombre TEXT NOT NULL, ' +
+                    'autor TEXT NOT NULL, ' +
+                    'anio INTEGER, ' +
+                    'editorial TEXT, ' +
+                    'precio REAL DEFAULT 0.00, ' +
+                    'fecha TEXT CURRENT_TIMESTAMP)';
+
+            db.transaction(function(tx) {
+                tx.executeSql(q);
+            }, errorHandler, exitoCreate);
+
+            var q = 'ALTER TABLE libros ADD COLUMN paginas INTEGER';
+            db.transaction(function(tx){
+                tx.executeSql(q)
+            },
+            errorHandler,
+            exitoAlterColumn);
+            var q = 'ALTER TABLE libros RENAME TO catalogo;';
+            db.transaction(function(tx){
+                tx.executeSql(q)
+            },
+            errorHandler,
+            exitoAlterRename);
+            var q = 'DROP TABLE if exists libros';
+            db.transaction(function(tx){
+                tx.executeSql(q)
+            },
+            errorHandler,
+            exitoDropLibros);
+            var q = 'DROP TABLE if exists catalogo';
+            db.transaction(function(tx){
+                tx.executeSql(q)
+            },
+            errorHandler,
+            exitoDropCatalogo);
+        }
+
+
+        function errorHandler(transaction, error) {
+        console.log('Error en la transacción: ');
+        }
+
+        function exitoCreate(transaction, error) {
+        console.log('Create exitoso ');
+        }
+
+        
+        function exitoHandler() {
+            console.log('Consulta ejecutada con éxito');
+        }
+
+        function exitoAlterColumn() {
+            console.log('ALTER COLUMN ejecutado con éxito');
+        }
+
+        function exitoAlterRename() {
+            console.log('ALTER RENAME ejecutado con éxito');
+        }
+
+        function exitoDropLibros() {
+            console.log('DROP TABLE libros ejecutado con éxito');
+        }
+
+        function exitoDropCatalogo() {
+            console.log('DROP TABLE catalogo ejecutado con éxito');
+        }
+    </script>
+</head>
+<body>
+    <h1>Bienvenido a WebSQL</h1>
+</body>
+</html>
